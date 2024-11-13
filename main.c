@@ -13,6 +13,18 @@ struct User {
 char username[50];
 char password[50];
 
+#define NUM_OPTIONS 4
+const char *menu_options[NUM_OPTIONS] = {"Grades    ", "Classes   ",
+                                         "Upcoming  ", "GPA       "};
+
+int cursor_position = 1;
+
+void move_cursor(int direction){
+  cursor_position += direction;
+  if (cursor_position < 0) cursor_position = NUM_OPTIONS - 1;
+  if (cursor_position >= NUM_OPTIONS) cursor_position = 0;
+}
+
 struct User find_user_by_username(char username[50]);
 
 bool verify_user(struct User user, char entered_password[50]);
@@ -24,16 +36,14 @@ int main(int argc, char **argv) {
   // clear terminal
   printf("\033[2J\033[1;1H");
 
-  char k;
-
   struct winsize w;
   ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
 
   header(w.ws_col, "Login");
-  printf("Insert your username:");
+  printf("\n\n   Insert your username: ");
   scanf("%49s", username);
 
-  printf("Insert your password:");
+  printf("\n\n   Insert your password: ");
   scanf("%49s", password);
 
   struct User foundUser = find_user_by_username(username);
@@ -57,9 +67,16 @@ int main(int argc, char **argv) {
   printf("\033[2J\033[1;1H");
   header(w.ws_col, "Dashboard");
 
+  char k;
   while (1) {
     scanf("%c", &k);
 
+    printf("\n\n\n\n");
+    center_text(w.ws_col, "Grades    ");
+    center_text(w.ws_col, "Classes   ");
+    center_text(w.ws_col, "Upcoming  ");
+    center_text(w.ws_col, "GPA       ");
+    printf("\n\n\n\n");
   }
 
   return 0;
