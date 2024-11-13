@@ -14,15 +14,17 @@ char username[50];
 char password[50];
 
 #define NUM_OPTIONS 4
-const char *menu_options[NUM_OPTIONS] = {"Grades    ", "Classes   ",
-                                         "Upcoming  ", "GPA       "};
+const char *pMenu_options[NUM_OPTIONS] = {"Grades    ", "Classes   ",
+                                          "Upcoming  ", "GPA       "};
 
 int cursor_position = 1;
 
-void move_cursor(int direction){
+void move_cursor(int direction) {
   cursor_position += direction;
-  if (cursor_position < 0) cursor_position = NUM_OPTIONS - 1;
-  if (cursor_position >= NUM_OPTIONS) cursor_position = 0;
+  if (cursor_position < 0)
+    cursor_position = NUM_OPTIONS - 1;
+  if (cursor_position >= NUM_OPTIONS)
+    cursor_position = 0;
 }
 
 struct User find_user_by_username(char username[50]);
@@ -30,6 +32,16 @@ struct User find_user_by_username(char username[50]);
 bool verify_user(struct User user, char entered_password[50]);
 void header(int col, char text[50]);
 void center_text(int width, const char *text);
+
+void print_menu(int width) {
+
+  printf("\033[2J\033[1;1H");
+  header(width, "Dashboard");
+
+  for (int i = 0; i < NUM_OPTIONS; i++) {
+    center_text(width, pMenu_options[i]);
+  };
+};
 
 int main(int argc, char **argv) {
 
@@ -64,19 +76,12 @@ int main(int argc, char **argv) {
 
   // dashboard
 
-  printf("\033[2J\033[1;1H");
-  header(w.ws_col, "Dashboard");
+  print_menu(w.ws_col);
 
   char k;
-  while (1) {
-    scanf("%c", &k);
+  while (1){
 
-    printf("\n\n\n\n");
-    center_text(w.ws_col, "Grades    ");
-    center_text(w.ws_col, "Classes   ");
-    center_text(w.ws_col, "Upcoming  ");
-    center_text(w.ws_col, "GPA       ");
-    printf("\n\n\n\n");
+
   }
 
   return 0;
