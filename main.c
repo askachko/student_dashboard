@@ -1,19 +1,35 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
 
 struct User {
   char username[50];
   char password[50];
 };
 
+// for user input
 char username[50];
 char password[50];
 
 struct User find_user_by_username(char username[50]);
-int verify_user(struct User user, char entered_password[50]);
 
-int main() {
+bool verify_user(struct User user, char entered_password[50]);
+void header(int col, char text[50]);
+void center_text(int width, const char *text);
 
+int main(int argc, char **argv) {
+
+  // clear terminal
+  printf("\033[2J\033[1;1H");
+
+  char k;
+
+  struct winsize w;
+  ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+
+  header(w.ws_col, "Login");
   printf("Insert your username:");
   scanf("%49s", username);
 
@@ -22,10 +38,29 @@ int main() {
 
   struct User foundUser = find_user_by_username(username);
 
+  bool is_verified;
+
   // If the username exists
   if (foundUser.username > 0) {
-    return verify_user(foundUser, password);
+    is_verified = verify_user(foundUser, password);
+  } else {
+    printf("User does not exist");
+    return 0;
   };
+
+  if (is_verified == false) {
+    return 1;
+  }
+
+  // dashboard
+
+  printf("\033[2J\033[1;1H");
+  header(w.ws_col, "Dashboard");
+
+  while (1) {
+    scanf("%c", &k);
+
+  }
 
   return 0;
 }
@@ -60,12 +95,41 @@ struct User find_user_by_username(char username[50]) {
   return emptyUser;
 }
 
-int verify_user(struct User user, char entered_password[50]) {
-  if (strcmp(user.username, username) == 0) {
-    printf("Verified, welcome %s", user.username);
-    return 0;
+bool verify_user(struct User user, char entered_password[50]) {
+  if (strcmp(user.password, entered_password) == 0) {
+    return true;
   } else {
-    printf("Unauthorized");
-    return 1;
+    printf("Error, wrong password");
+    return false;
   }
+};
+
+void header(int col, char text[50]) {
+  char line[256] = "";
+
+  for (int i = 0; i < col; i++) {
+    line[i] = '=';
+  };
+  printf("%s", line);
+  center_text(col, text);
+  printf("%s", line);
+}
+
+void center_text(int width, const char *text) {
+  int text_length = strlen(text);
+
+  if (text_length > width) {
+    printf("%s\n", text);
+    return;
+  }
+
+  int padding = (width - text_length) / 2;
+  int right_padding = width - text_length - padding;
+
+  for (int i = 0; i < padding; i++)
+    putchar(' ');
+  printf("%s", text);
+  for (int i = 0; i < right_padding; i++)
+    putchar(' ');
+  putchar('\n');
 };
